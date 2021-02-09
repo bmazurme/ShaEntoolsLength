@@ -37,24 +37,29 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Grid.ColumnSpan="3" Grid.Column="0" Header="{x:Static p:Resources.FieldPipes}" Grid.Row="0" Margin="10,0">
-            <DataGrid Grid.Row="0" Grid.Column="0" ItemsSource="{Binding ListSelection}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <GroupBox Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="0" Margin="10,0" Header="{x:Static p:Resources.FieldPipes}">
+            <DataGrid Grid.Row="0" Grid.Column="0" AutoGenerateColumns="False" CanUserAddRows="False" ItemsSource="{Binding ListSelection}">
 
                 <DataGrid.Columns>
                     <DataGridTextColumn IsReadOnly="True" Width="36*" 
-                                        Header="{x:Static p:Resources.FieldDiameter}" Binding="{Binding Diameter}" />
+                                        Header="{x:Static p:Resources.FieldDiameter}" 
+                                        Binding="{Binding Diameter}" />
                     <DataGridTextColumn IsReadOnly="True" Width="26*" 
-                                        Header="{x:Static p:Resources.FieldLength}" Binding="{Binding Length}" />
+                                        Header="{x:Static p:Resources.FieldLength}" 
+                                        Binding="{Binding Length}" />
                     <DataGridTextColumn IsReadOnly="True" Width="30*"
-                                        Header="{x:Static p:Resources.FieldArea}" Binding="{Binding Area}" />
-                    <DataGridTextColumn IsReadOnly="True" Width="13*" Header="{x:Static p:Resources.FieldPcs}"
+                                        Header="{x:Static p:Resources.FieldArea}" 
+                                        Binding="{Binding Area}" />
+                    <DataGridTextColumn IsReadOnly="True" Width="13*" 
+                                        Header="{x:Static p:Resources.FieldPcs}"
                                         Binding="{Binding Count}"/>
                 </DataGrid.Columns>
 
             </DataGrid>
         </GroupBox>
         
-        <Button Grid.Row="5" Margin="0,0,10,0" Grid.Column="2" Style="{StaticResource MaterialDesignOutlinedButton}"
+        <Button Grid.Row="5" Margin="0,0,10,0" Grid.Column="2" 
+                Style="{StaticResource MaterialDesignOutlinedButton}"
                 Content="{x:Static p:Resources.Close}" IsCancel="True"/>
     </Grid>
 
