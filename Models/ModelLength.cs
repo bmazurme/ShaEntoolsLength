@@ -15,80 +15,71 @@ namespace Entools.Model
             Document doc = uiapp.ActiveUIDocument.Document;
             UIDocument uidoc = uiapp.ActiveUIDocument;
             // Get Ids of selected elements
-            ICollection<ElementId> selectedIds = uidoc.Selection.GetElementIds();
+            ICollection<ElementId> selIds = uidoc.Selection.GetElementIds();
             // Create containers for sizes and lengths
-            List<double> listSizes = new List<double>();
-            List<double> listLength = new List<double>();
-            List<double> listArea = new List<double>();
-            List<int> listCount = new List<int>(); 
-            List<Element> listElements = new List<Element>();
-            double sumLength = 0;
-            const BuiltInParameter lengthBuiltInParameter = BuiltInParameter.CURVE_ELEM_LENGTH;
-            const BuiltInParameter areaBuiltInParameter = BuiltInParameter.RBS_CURVE_SURFACE_AREA;
+            List<Element> lstEls = new List<Element>();
+            List<double> lstSize = new List<double>();
+            List<double> lstLeng = new List<double>();
+            List<double> lstArea = new List<double>();
+            List<int> lstCount = new List<int>();             
+            const BuiltInParameter bipLeng = BuiltInParameter.CURVE_ELEM_LENGTH;
+            const BuiltInParameter bipArea = BuiltInParameter.RBS_CURVE_SURFACE_AREA;
+            const BuiltInParameter bipDiam = BuiltInParameter.RBS_PIPE_DIAMETER_PARAM;
 
             // Check count selected elements, if count == 0, than skip
-            if (selectedIds.Count() > 0)
+            if (selIds.Count() > 0)
             {
-                foreach (ElementId elementId in selectedIds)
+                foreach (ElementId elmntId in selIds)
                 {
                     // Get elements from elements Id
-                    Element element = doc.GetElement(elementId);
-                    Category category = element.Category;
-                    BuiltInCategory enumCategory = (BuiltInCategory)category.Id.IntegerValue;
-
+                    Element elmnt = doc.GetElement(elmntId);
+                    Category cat = elmnt.Category;
+                    BuiltInCategory bic = (BuiltInCategory)cat.Id.IntegerValue;
                     // Filters category
-                    if (enumCategory.ToString() == "OST_PipeCurves")
-                    {
-                        listElements.Add(element);
-                        sumLength += element.get_Parameter(lengthBuiltInParameter).AsDouble();
-                    }
+                    if (bic == BuiltInCategory.OST_PipeCurves) lstEls.Add(elmnt);
                 }
 
-                List<Element> tempListSizes = listElements.GroupBy(x => x.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM).AsDouble()).Select(y => y.First()).ToList();
-                tempListSizes = tempListSizes.OrderBy(x => x.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM).AsDouble()).ToList();
-                List<Element> newList = listElements.OrderBy(x => x.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM).AsDouble()).ToList();
+                List<Element> tmpLstSiz = lstEls.GroupBy(x => x.get_Parameter(bipDiam).AsDouble()).Select(y => y.First()).ToList();
+                              tmpLstSiz = tmpLstSiz.OrderBy(x => x.get_Parameter(bipDiam).AsDouble()).ToList();
+                List<Element> newList = lstEls.OrderBy(x => x.get_Parameter(bipDiam).AsDouble()).ToList();
 
-                foreach (Element element in tempListSizes)
-                {
-                    listSizes.Add(element.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM).AsDouble());
-                }
+                foreach (Element element in tmpLstSiz)                
+                    lstSize.Add(element.get_Parameter(bipDiam).AsDouble());                
 
-                foreach (double size in listSizes)
+                foreach (double size in lstSize)
                 {
-                    double length = 0;
-                    double area = 0;
+                    double leng = 0, area = 0;
                     int count = 0;
 
                     foreach (Element element in newList)
                     {
-                        if (element.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM).AsDouble() == size)
+                        if (element.get_Parameter(bipDiam).AsDouble() == size)
                         {
-                            length += element.get_Parameter(lengthBuiltInParameter).AsDouble();
-                            area += element.get_Parameter(areaBuiltInParameter).AsDouble();
+                            leng += element.get_Parameter(bipLeng).AsDouble();
+                            area += element.get_Parameter(bipArea).AsDouble();
                             count++;
                         }
                     }
 
-                    length *= 304.8; // Units ft -> mm
+                    leng *= 304.8; // Units ft -> mm
                     area = area * 304.8 * 304.8 / 1000000;
-                    listLength.Add(length);
-                    listArea.Add(area);
-                    listCount.Add(count);
+                    lstLeng.Add(leng);
+                    lstArea.Add(area);
+                    lstCount.Add(count);
                 }
 
-                Transfers.Diameter = listSizes;
-                Transfers.Length = listLength;
-                Transfers.Area = listArea;
-                Transfers.Count = listCount;
+                Transfers.Diameter = lstSize;
+                Transfers.Length = lstLeng;
+                Transfers.Area = lstArea;
+                Transfers.Count = lstCount;
 
                 // Show window result
-                WindowPipeInfo windowPipeInfo = new WindowPipeInfo();
-                windowPipeInfo.ShowDialog();
+                WindowPipeInfo winInfo = new WindowPipeInfo();
+                winInfo.ShowDialog();
             }
             else TaskDialog.Show("Error", "Please select pipes.");
         }
     }
-
 
     // Transfer data
     public static class Transfers
@@ -98,7 +89,6 @@ namespace Entools.Model
         public static List<double> Area { get; set; }
         public static List<int> Count { get; set; }
     }
-
 
     public class PipeDetail 
     {
