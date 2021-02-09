@@ -30,8 +30,8 @@ namespace Entools.ViewModels
 
             CultureInfo ui = Thread.CurrentThread.CurrentUICulture;
 
-            if (ui.Name == "ru-RU") System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("ru-RU");
-            else System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("en-US");
+            if (ui.Name == "ru-RU") Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
+            else Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 
             #endregion
 
